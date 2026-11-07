@@ -1,1 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عيد ميلاد فاطمة عبدالله ♥️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffe6eb 0%, #def3f8 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* القلوب المتساقطة بالخلفية */
+    .hearts-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .falling-heart {
+      position: absolute;
+      color: #ff4d6d;
+      opacity: 0.6;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* البطاقات */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 35px 25px;
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(230, 80, 115, 0.18);
+      text-align: center;
+      max-width: 450px;
+      width: 100%;
+      border: 2px solid #fff;
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .hidden { display: none !important; }
+
+    .heart-icon {
+      font-size: 50px;
+      color: #ff4d6d;
+      animation: pulse 1.5s infinite;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    h1, h2 {
+      color: #c9184a;
+      font-weight: 900;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #590d22;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      border: 2px solid #ffb3c1;
+      border-radius: 50px;
+      outline: none;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #ff4d6d, #ff758f);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(255, 77, 109, 0.4);
+    }
+
+    .error-text {
+      color: #d90429;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    /* منطقة لعبة هيلو كيتي */
+    .game-area {
+      background: #fff0f3;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+      position: relative;
+      height: 160px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      overflow: hidden;
+      border: 1px dashed #ff758f;
+    }
+
+    .kitty {
+      font-size: 55px;
+      user-select: none;
+      transition: all 0.4s ease;
+    }
+
+    .heart-center {
+      font-size: 45px;
+      opacity: 0.3;
+      transition: all 0.5s ease;
+    }
+
+    .age-badge {
+      background: #ffb3c1;
+      color: #590d22;
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 5px 20px;
+      border-radius: 30px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .final-message {
+      background-color: #fff0f3;
+      border-right: 4px solid #ff4d6d;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: right;
+      line-height: 1.8;
+      color: #590d22;
+      font-size: 1.15rem;
+      margin: 20px 0;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- القلوب المتساقطة -->
+  <div class="hearts-backdrop" id="heartsContainer"></div>
+
+  <!-- 1. شاشة الباسوورد -->
+  <div class="card" id="stepPass">
+    <div class="heart-icon">🔒</div>
+    <h2>أدخلي كلمة السر للفتح ✨</h2>
+    <p>تاريخ تعارفنا المميز</p>
+    <input type="text" class="input-field" id="passInput" placeholder="١٤٤٧/٢/٥">
+    <div class="error-text hidden" id="errorMsg">التاريخ غير صحيح، حاولي مرة أخرى ❤️</div>
+    <button class="btn" onclick="checkPassword()">دخول</button>
+  </div>
+
+  <!-- 2. سؤال تحبيني أو لا -->
+  <div class="card hidden" id="stepQuestion">
+    <div class="heart-icon">💖</div>
+    <h2>سؤال مهم لفاطمة عبدالله ♥️</h2>
+    <p>تحبيني أو لا ؟ 🥺</p>
+    <div class="btn-group">
+      <button class="btn" onclick="answerLove('اي')">اي ❤️</button>
+      <button class="btn" style="background: #a2d2ff; color: #03045e;" onclick="answerLove('لا')">لا 💔</button>
+    </div>
+  </div>
+
+  <!-- 3. لعبة هيلو كيتي -->
+  <div class="card hidden" id="stepGame">
+    <div class="heart-icon">🐱</div>
+    <h2>لعبة هيلو كيتي 🎀</h2>
+    <p>اضغطي الزر عشان تقربين هيلو كيتي للقلب وتطلع القلوب ✨</p>
+    
+    <div class="game-area">
+      <div class="kitty" id="kittyLeft">🐱</div>
+      <div class="heart-center" id="heartCenter">🤍</div>
+      <div class="kitty" id="kittyRight">🐱</div>
+    </div>
+
+    <button class="btn" id="bringCloserBtn" onclick="bringKittiesCloser()">قرّبيهم من القلب 💖</button>
+  </div>
+
+  <!-- 4. شاشة التهنئة النهائية -->
+  <div class="card hidden" id="stepFinal">
+    <div class="heart-icon">🎂</div>
+    <h1>عيد ميلاد سعيد 🎉</h1>
+    <h2>فاطمة عبدالله ♥️</h2>
+    
+    <div class="age-badge">✨ 15 ✨</div>
+
+    <div class="final-message">
+      كل عام و انتي بخير يا اجمل و احلى انسانه و احلى فاطمة أنا عرفتها ♥️🥺
+    </div>
+
+    <p style="font-weight: bold; color: #c9184a; font-size: 1.2rem;">
+      احمد بن محمد ♥️
+    </p>
+  </div>
+
+  <script>
+    // إنشاء القلوب خلف الشاشة
+    function createFallingHearts() {
+      const container = document.getElementById('heartsContainer');
+      const heartSymbols = ['❤️', '💖', '💕', '💗', '🌸'];
+      for (let i = 0; i < 25; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'falling-heart';
+        heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        container.appendChild(heart);
+      }
+    }
+    createFallingHearts();
+
+    // التحقق من كلمة السر
+    function checkPassword() {
+      const input = document.getElementById('passInput').value.trim();
+      // قبـول الصيغة بالأرقام العربية والإنجليزية ومع السلاش أو بدونه
+      if (input === "١٤٤٧/٢/٥" || input === "1447/2/5" || input === "١٤٤٧-٢-٥" || input === "1447-2-5") {
+        document.getElementById('stepPass').classList.add('hidden');
+        document.getElementById('stepQuestion').classList.remove('hidden');
+        triggerConfetti();
+      } else {
+        document.getElementById('errorMsg').classList.remove('hidden');
+      }
+    }
+
+    // الإجابة على سؤال تحبيني
+    function answerLove(ans) {
+      if (ans === 'لا') {
+        alert("ما فيه لا! لازم تختارين اي 😜❤️");
+        return;
+      }
+      triggerConfetti();
+      document.getElementById('stepQuestion').classList.add('hidden');
+      document.getElementById('stepGame').classList.remove('hidden');
+    }
+
+    // حركة هيلو كيتي والقلب
+    let step = 0;
+    function bringKittiesCloser() {
+      step++;
+      const kLeft = document.getElementById('kittyLeft');
+      const kRight = document.getElementById('kittyRight');
+      const heart = document.getElementById('heartCenter');
+      const btn = document.getElementById('bringCloserBtn');
+
+      if (step === 1) {
+        kLeft.style.transform = "translateX(-25px)";
+        kRight.style.transform = "translateX(25px)";
+        heart.innerText = "💗";
+        heart.style.opacity = "0.6";
+      } else if (step === 2) {
+        kLeft.style.transform = "translateX(-50px)";
+        kRight.style.transform = "translateX(50px)";
+        heart.innerText = "💖";
+        heart.style.opacity = "0.9";
+        heart.style.transform = "scale(1.2)";
+        btn.innerText = "بعد شوية! ✨";
+      } else if (step === 3) {
+        kLeft.style.transform = "translateX(-75px)";
+        kRight.style.transform = "translateX(75px)";
+        heart.innerText = "❤️";
+        heart.style.transform = "scale(1.6)";
+        heart.style.opacity = "1";
+        triggerConfetti();
+        
+        btn.innerText = "انتقلي للتهنئة ✨";
+        btn.onclick = function() {
+          document.getElementById('stepGame').classList.add('hidden');
+          document.getElementById('stepFinal').classList.remove('hidden');
+          triggerConfetti();
+        };
+      }
+    }
+
+    function triggerConfetti() {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
+
+</body>
+</html>
 
